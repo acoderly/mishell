@@ -1,0 +1,1 @@
+include "./watchdogminer.yara"
