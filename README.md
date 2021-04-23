@@ -1,5 +1,4 @@
 ## mishell
-----------------------------------------------------------------------
 
 mishell is a sample program to extract some data from bash shell script.
 
