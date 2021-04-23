@@ -44,7 +44,7 @@ def wrap_callback(file_abs_path, g_map):
     return callback
 
 
-current_ability = ["watchdogminer", ]
+current_ability = ["watchdogminer", "watchdogminer_scanner"]
 family_dispatch_map = {}
 
 process_yara_include()
@@ -66,17 +66,7 @@ def dispatcher(shell_family, maps: Dict):
         try:
             worker.do(data_dict)
         except:
-            print("Error happend when processing {}".format(family_name))
-        # ret = worker.get_process_result()
-        # print(len(ret))
-        # if family_name == "ignore":
-        #     print(f"ignore: {len(ret)}")
-        #     continue
-        # for k, v in ret.items():
-        #     print(k, v["extracted_info"], v["tags"])
-        #     # print(k)
-        # else:
-        #     print(len(ret))
+            print("Error happened when processing {}".format(family_name))
 
 
 if __name__ == '__main__':
