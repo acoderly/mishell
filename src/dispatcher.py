@@ -44,7 +44,7 @@ def wrap_callback(file_abs_path, g_map):
     return callback
 
 
-current_ability = ["watchdogminer", "watchdogminer_scanner"]
+current_ability = ["watchdogminer", "watchdogminer_scanner", "sysrv_sh"]
 family_dispatch_map = {}
 
 process_yara_include()

